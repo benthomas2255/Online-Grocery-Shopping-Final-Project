@@ -29,6 +29,7 @@ if(!empty($_SESSION['cart'])){
 }
 
 
+
 if(isset($_POST['ordersubmit'])) 
 {
 	
@@ -44,22 +45,48 @@ else{
 
 
 		foreach($value as $qty=> $val34){
+unset($_SESSION['cart']);
 
 
-
-mysqli_query($con,"insert into orders(userId,productId,quantity) values('".$_SESSION['id']."','$qty','$val34')");
-header('location:payment-method.php');
+mysqli_query($con,"insert into carts(userId,productId,quantity) values('".$_SESSION['id']."','$qty','$val34')");
+header('location:indexx.php');
 }
 }
 }
 
+
+	if(isset($_POST['update']))
+	{
+		$baddress=$_POST['billingaddress'];
+		$bstate=$_POST['bilingstate'];
+		$bcity=$_POST['billingcity'];
+		$bpincode=$_POST['billingpincode'];
+		$query=mysqli_query($con,"update users set billingAddress='$baddress',billingState='$bstate',billingCity='$bcity',billingPincode='$bpincode' where id='".$_SESSION['id']."'");
+		if($query)
+		{
+echo "<script>alert('Billing Address has been updated');</script>";
+		}
+	}
+
+
+	if(isset($_POST['shipupdate']))
+	{
+		$saddress=$_POST['shippingaddress'];
+		$sstate=$_POST['shippingstate'];
+		$scity=$_POST['shippingcity'];
+		$spincode=$_POST['shippingpincode'];
+		$query=mysqli_query($con,"update users set shippingAddress='$saddress',shippingState='$sstate',shippingCity='$scity',shippingPincode='$spincode' where id='".$_SESSION['id']."'");
+		if($query)
+		{
+echo "<script>alert('Shipping Address has been updated');</script>";
+		}
+	}
 
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-	
 		<meta charset="utf-8">
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -80,7 +107,6 @@ header('location:payment-method.php');
 		<link rel="stylesheet" href="assets/css/rateit.css">
 		<link rel="stylesheet" href="assets/css/bootstrap-select.min.css">
 
-
 		<link rel="stylesheet" href="assets/css/config.css">
 
 		<link href="assets/css/green.css" rel="alternate stylesheet" title="Green color">
@@ -91,15 +117,14 @@ header('location:payment-method.php');
 		
 		<link rel="stylesheet" href="assets/css/font-awesome.min.css">
 
-       
+  
 		<link href='http://fonts.googleapis.com/css?family=Roboto:300,400,500,700' rel='stylesheet' type='text/css'>
 		
-
+		
 
 	</head>
     <body class="cnt-home">
 	
-		
 <header class="header-style-1">
 <?php include('includes/top-header.php');?>
 <?php include('includes/main-header.php');?>
@@ -169,9 +194,10 @@ if(!empty($_SESSION['cart'])){
 				$subtotal= $_SESSION['cart'][$row['id']]['quantity']*$row['productPrice']+$row['shippingCharge'];
 				$totalprice += $subtotal;
 				$_SESSION['qnty']=$totalqunty+=$quantity;
-
+				$_SESSION['total']=$totalprice;
+				
 				array_push($pdtid,$row['id']);
-
+//print_r($_SESSION['pid'])=$pdtid;exit;
 	?>
 
 				<tr>
@@ -191,14 +217,9 @@ $_SESSION['sid']=$pd;
 								<div class="rating rateit-small"></div>
 							</div>
 							<div class="col-sm-8">
-<?php $rt=mysqli_query($con,"select * from productreviews where productId='$pd'");
-$num=mysqli_num_rows($rt);
-{
-?>
+
 								<div class="reviews">
-									( <?php echo htmlentities($num);?> Reviews )
-								</div>
-								<?php } ?>
+									
 							</div>
 						</div>
 						
@@ -220,6 +241,7 @@ $num=mysqli_num_rows($rt);
 				</tr>
 
 				<?php } }
+
 $_SESSION['pid']=$pdtid;
 				?>
 				
@@ -227,18 +249,21 @@ $_SESSION['pid']=$pdtid;
 		</table>
 		
 	</div>
+</div>		
+	
 
-
-
-
-					 
-					</td>
-				</tr>
-		</tbody>
-	</table>
+		
 </div>
 
-
+<div class="col-md-4 col-sm-12 estimate-ship-tax">
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th>
+					<span class="estimate-title">Shipping Address</span>
+				</th>
+			</tr>
+		</thead>
 		<tbody>
 				<tr>
 					<td>
@@ -249,6 +274,28 @@ while($row=mysqli_fetch_array($query))
 {
 ?>
 
+<div class="form-group">
+					    <label class="info-title" for="Shipping Address">Shipping Address<span>*</span></label>
+					    <textarea class="form-control unicase-form-control text-input"  name="shippingaddress" required="required"><?php echo $row['shippingAddress'];?></textarea>
+					  </div>
+
+
+
+						<div class="form-group">
+					    <label class="info-title" for="Billing State ">Shipping State  <span>*</span></label>
+			 <input type="text" class="form-control unicase-form-control text-input" id="shippingstate" name="shippingstate" value="<?php echo $row['shippingState'];?>" required>
+					  </div>
+					  <div class="form-group">
+					    <label class="info-title" for="Billing City">Shipping City <span>*</span></label>
+					    <input type="text" class="form-control unicase-form-control text-input" id="shippingcity" name="shippingcity" required="required" value="<?php echo $row['shippingCity'];?>" >
+					  </div>
+ <div class="form-group">
+					    <label class="info-title" for="Billing Pincode">Shipping Pincode <span>*</span></label>
+					    <input type="number" class="form-control unicase-form-control text-input" id="shippingpincode" name="shippingpincode" required="required" value="<?php echo $row['shippingPincode'];?>" >
+					  </div>
+
+
+					  <button type="submit" name="shipupdate" class="btn-upper btn btn-primary checkout-page-button">Update</button>
 					<?php } ?>
 
 		
@@ -267,6 +314,7 @@ while($row=mysqli_fetch_array($query))
 					
 					<div class="cart-grand-total">
 						Grand Total<span class="inner-left-md"><?php echo $_SESSION['tp']="$totalprice". ".00"; ?></span>
+						
 					</div>
 				</th>
 			</tr>
@@ -291,6 +339,7 @@ echo "Your shopping Cart is empty";
 <?php echo include('includes/brands-slider.php');?>
 </div>
 </div>
+
 <?php include('includes/footer.php');?>
 
 	<script src="assets/js/jquery-1.11.1.min.js"></script>
@@ -309,6 +358,8 @@ echo "Your shopping Cart is empty";
     <script src="assets/js/wow.min.js"></script>
 	<script src="assets/js/scripts.js"></script>
 
+
+	
 	<script src="switchstylesheet/switchstylesheet.js"></script>
 	
 	<script>
