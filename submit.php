@@ -6,7 +6,7 @@ include('includes/config.php');
 if(isset($_POST['stripeToken'])){
 	\Stripe\Stripe::setVerifySslCerts(false);
 
-$token=$_POST['stripeToken'];
+	$token=$_POST['stripeToken'];
 
 	$data=\Stripe\Charge::create(array(
 		"amount"=>$totalprice* 100,
@@ -27,28 +27,33 @@ $token=$_POST['stripeToken'];
 		while($roA=mysqli_fetch_array($resultA))  
 		{
 			$Pid= $roA['productId'];
-			$queryB = "SELECT * FROM products where productId ='$Pid'";
+			$queryB = "SELECT * FROM products where id ='$Pid'";
 			$resultB = mysqli_query($con,$queryB);
 			$roB=mysqli_fetch_array($resultB);
 
 			$count= $roB['quantity'] - $roA['quantity'];
 			$quantity= $roA['quantity'];
-			$queryC ="update products SET quantity = '$count' where P_id ='$Pid'";
+			$queryC ="update products SET quantity = '$count' where id ='$Pid'";
 			$resultC =mysqli_query($con,$queryC);
 
 			$queryD ="insert into orders(userId,productId,quantity) values($tmpid,$Pid,$quantity)";
 			$resultD =mysqli_query($con,$queryD);
+			$oid=mysqli_insert_id($con);
+
+
 		}
 		$queryE ="DELETE FROM carts WHERE userId= $tmpid";
 		$resultE =mysqli_query($con,$queryE);
 
-		header("location:order-history.php");
+		header("location:../orderDetails.php?dd=".$oid);
+
+		
 	}
 	else{
 		header("location:index.php");
 	}
-
-
+	
+	header("location:php/BillSentMail.php?dd=".$oid);
 	
 }
 ?>
