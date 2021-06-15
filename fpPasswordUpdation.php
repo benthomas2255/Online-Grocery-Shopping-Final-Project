@@ -1,5 +1,5 @@
 <?php
-$con=mysqli_connect("localhost","root","","groceryshopping")or die("couldn't connect");
+include('includes/config.php');
 
 session_start();
     if( isset($_SESSION['login']) && isset($_POST['password']))
