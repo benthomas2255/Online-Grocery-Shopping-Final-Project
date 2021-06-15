@@ -103,8 +103,50 @@ counter-increment: li-counter;
 <li><a href="subcategory.php">Create Sub Category</a></li>
 <li><a href="insert-product.php">Insert Product</a></li>
 <li><a href="manage-products.php">Manage Products</a></li>
+		<li>
+								<a class="collapsed" data-toggle="collapse" href="#togglePages">
+						
+									<i class="icon-chevron-down pull-right"></i><i class="icon-chevron-up pull-right"></i>
+									Order Management
+									</ol>
+								</a>
+								<br>
+								<ul  style="list-style-type:disc;"	 id="togglePages" class="collapse unstyled">
+									<li>
+										<a href="todays-orders.php">
+											<i class="icon-tasks"></i>
+											Today's Orders
+										</a>
+									</li>
+									<li>
+										<a href="pending-orders.php">
+											<i class="icon-tasks"></i>
+											Pending Orders
+										<?php	
+	$status='Delivered';									 
+$ret = mysqli_query($con,"SELECT * FROM orders where orderStatus!='$status' || orderStatus is null ");
+$num = mysqli_num_rows($ret);
+{?><b class="label orange pull-right"><?php echo htmlentities($num); ?></b>
+<?php } ?>
+										</a>
+									</li>
+									<li>
+										<a href="delivered-orders.php">
+											<i class="icon-inbox"></i>
+											Delivered Orders
+								<?php	
+	$status='Delivered';									 
+$rt = mysqli_query($con,"SELECT * FROM orders where orderStatus='$status'");
+$num1 = mysqli_num_rows($rt);
+{?><b class="label green pull-right"><?php echo htmlentities($num1); ?></b>
+<?php } ?>
 
-</ol>
+										</a>
+									</li>
+								</ul>
+							</li>
+							
+
 </div>
 
                                
